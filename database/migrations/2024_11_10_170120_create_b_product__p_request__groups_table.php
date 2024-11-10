@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateBasketsTable extends Migration
+class CreateBProductPRequestGroupsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,11 @@ class CreateBasketsTable extends Migration
      */
     public function up()
     {
-        // корзина клиента
-        Schema::create('baskets', function (Blueprint $table) {
+        // Группа,заявка, накладная, поступление ценового предложения
+        Schema::create('b_product__p_request__groups', function (Blueprint $table) {
             $table->id();
-            $table->integer('id_client_request' );
-            $table->date('delivery_date');
-            
+            $table->integer('basic_product_id');
+            $table->integer('price_request_id');
             $table->timestamps();
         });
     }
@@ -30,6 +29,6 @@ class CreateBasketsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('baskets');
+        Schema::dropIfExists('b_product__p_request__groups');
     }
 }

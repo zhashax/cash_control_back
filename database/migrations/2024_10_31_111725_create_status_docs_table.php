@@ -13,6 +13,7 @@ class CreateStatusDocsTable extends Migration
      */
     public function up()
     {
+        // статусы накладных
         Schema::create('status_docs', function (Blueprint $table) {
             $table->id();
             $table->string('name');

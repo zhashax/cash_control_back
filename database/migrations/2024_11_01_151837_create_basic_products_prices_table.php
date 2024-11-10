@@ -13,6 +13,7 @@ class CreateBasicProductsPricesTable extends Migration
      */
     public function up()
     {
+        // карточка товара админа
         Schema::create('basic_products_prices', function (Blueprint $table) {
             $table->id();
             $table->string('name_of_products');

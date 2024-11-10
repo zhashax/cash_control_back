@@ -17,7 +17,6 @@ class CreatePriceRequestsTable extends Migration
         Schema::create('price_requests', function (Blueprint $table) {
             $table->id();
             $table->string('choice_status')->nullable();
-
             $table->integer('user_id')->nullable();
             $table->integer('address_id')->nullable();
             $table->integer('product_id');

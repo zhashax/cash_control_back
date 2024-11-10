@@ -13,6 +13,7 @@ class CreateUnitMeasurementsTable extends Migration
      */
     public function up()
     {
+        // единица измерения
         Schema::create('unit_measurements', function (Blueprint $table) {
             $table->id();
             $table->string('name');

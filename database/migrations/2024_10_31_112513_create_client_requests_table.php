@@ -13,6 +13,7 @@ class CreateClientRequestsTable extends Migration
      */
     public function up()
     {
+        // фасовщик заявка в накладную
         Schema::create('client_requests', function (Blueprint $table) {
             $table->id();
             $table->integer('products_id');

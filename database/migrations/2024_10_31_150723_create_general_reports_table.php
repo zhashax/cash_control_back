@@ -13,10 +13,14 @@ class CreateGeneralReportsTable extends Migration
      */
     public function up()
     {
+        // накладная, заявка
         Schema::create('general_reports', function (Blueprint $table) {
             $table->id();
             $table->integer('client_id');
-            $table->integer('amount');
+            $table->integer('product_id');
+            $table->integer('price')->nullable();
+            $table->integer('unit_measurement_id');
+            $table->integer('amount')->nullable();
             $table->timestamps();
         });
     }

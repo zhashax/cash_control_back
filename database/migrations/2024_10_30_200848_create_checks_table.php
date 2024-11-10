@@ -13,6 +13,7 @@ class CreateChecksTable extends Migration
      */
     public function up()
     {
+        // чеки кассы
         Schema::create('checks', function (Blueprint $table) {
             $table->id();
             $table->string('type');

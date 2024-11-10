@@ -13,6 +13,7 @@ class CreateCashboxesTable extends Migration
      */
     public function up()
     {
+        // касса
         Schema::create('cashboxes', function (Blueprint $table) {
             $table->id();
             $table->string('name_of_income')->nullable();

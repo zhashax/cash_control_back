@@ -13,6 +13,7 @@ class CreateOrganizationsTable extends Migration
      */
     public function up()
     {
+        // организаторы
         Schema::create('organizations', function (Blueprint $table) {
             $table->id();
             $table->string('name');

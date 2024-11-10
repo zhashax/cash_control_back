@@ -13,6 +13,7 @@ class CreateSalesTable extends Migration
      */
     public function up()
     {
+        // подкарточка товара
         Schema::create('sales', function (Blueprint $table) {
             $table->id();
             $table->foreignId('product_id')->constrained()->onDelete('cascade'); // Reference to products table
