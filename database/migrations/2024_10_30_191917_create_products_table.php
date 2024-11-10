@@ -20,7 +20,6 @@ class CreateProductsTable extends Migration
             $table->string('description')->nullable();
             $table->string('unit_measurement')->nullable();
             $table->double('quantity')->nullable(); // This represents total remaining stock
-            $table->string('country')->nullable();
             $table->string('type')->nullable();
             $table->string('photo_product')->nullable();
             $table->integer('price')->nullable(); // Default price if needed

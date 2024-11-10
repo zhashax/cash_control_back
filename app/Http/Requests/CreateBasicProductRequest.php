@@ -21,16 +21,16 @@ class CreateBasicProductRequest extends FormRequest
      *
      * @return array
      */
-    public function rules():array
+    public function rules(): array
     {
         return [
-            'name_of_products' => 'required|string|max:255',
+            'name_of_products' => 'required|string',
             'description' => 'nullable|string',
             'country' => 'nullable|string',
             'type' => 'nullable|string',
-            'brutto' => 'nullable|numeric',
-            'netto' => 'nullable|numeric',
-            'photo_product' => 'nullable|string',
+            'brutto' => 'required|numeric',
+            'netto' => 'required|numeric',
+            'photo_product' => 'nullable|file|mimes:jpeg,png,jpg,gif|max:2048',
         ];
     }
 }

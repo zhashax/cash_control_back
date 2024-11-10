@@ -7,6 +7,9 @@ use App\Http\Controllers\Authcontroller;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\BasicProductController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\UnitMeasurementController;
+use App\Http\Controllers\OrganizationController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -31,17 +34,33 @@ Route::post('/logout', [AuthController::class,'logout']);
 // Route::group(['middleware'=>['auth:sanctum']], function () {
   
 // });
+//admin routes
 Route::post('/product_create',[AdminController::class,'storeProduct']);
+Route::post('basic-products-prices', [BasicProductController::class, 'store']);
+Route::get('/users', [UserController::class, 'index']);
+Route::put('/users/{user}/assign-role', [UserController::class, 'assignRole']);
+//admin routes end
 
 Route::middleware('auth:sanctum')->post('/upload-photo', [AuthController::class, 'uploadPhoto']);
 
-Route::post('basic-products-prices', [BasicProductController::class, 'store']);
 Route::post('sales', [BasicProductController::class, 'storeSales']);
 Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
    Route::get('/users', [UserController::class, 'index']);
    Route::post('/users', [UserController::class, 'store']);
    Route::put('/users/{user}', [UserController::class, 'update']);
    Route::delete('/users/{user}', [UserController::class, 'destroy']);
+
+   Route::get('/organizations', [OrganizationController::class, 'index']);
+    Route::post('/organizations', [OrganizationController::class, 'store']);
+    Route::put('/organizations/{organization}', [OrganizationController::class, 'update']);
+    Route::delete('/organizations/{organization}', [OrganizationController::class, 'destroy']);
+
+    // Unit Measurements Routes
+    Route::get('/unit-measurements', [UnitMeasurementController::class, 'index']);
+    Route::post('/unit-measurements', [UnitMeasurementController::class, 'store']);
+    Route::put('/unit-measurements/{unit}', [UnitMeasurementController::class, 'update']);
+    Route::delete('/unit-measurements/{unit}', [UnitMeasurementController::class, 'destroy']);
+
 });
 
 Route::middleware(['auth:sanctum', 'role:client'])->group(function () {
@@ -63,3 +82,37 @@ Route::middleware(['auth:sanctum', 'role:courier'])->group(function () {
 Route::middleware(['auth:sanctum', 'role:packer'])->group(function () {
 
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Route::get('/users', [UserController::class, 'index']);
+   Route::post('/users', [UserController::class, 'store']);
+   Route::put('/users/{user}', [UserController::class, 'update']);
+   Route::delete('/users/{user}', [UserController::class, 'destroy']);
+
+   Route::get('/organizations', [OrganizationController::class, 'index']);
+    Route::post('/organizations', [OrganizationController::class, 'store']);
+    Route::put('/organizations/{organization}', [OrganizationController::class, 'update']);
+    Route::delete('/organizations/{organization}', [OrganizationController::class, 'destroy']);
+
+    // Unit Measurements Routes
+    Route::get('/unit-measurements', [UnitMeasurementController::class, 'index']);
+    Route::post('/unit-measurements', [UnitMeasurementController::class, 'store']);
+    Route::put('/unit-measurements/{unit}', [UnitMeasurementController::class, 'update']);
+    Route::delete('/unit-measurements/{unit}', [UnitMeasurementController::class, 'destroy']);

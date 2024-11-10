@@ -8,6 +8,8 @@ use App\Http\Requests\CreateBasicProductRequest;
 use App\Http\Requests\CreateSalesRequest;
 use App\Services\BasicProductService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use App\Models\BasicProductsPrice;
 
 class BasicProductController extends Controller
 {
@@ -19,13 +21,29 @@ class BasicProductController extends Controller
     }
 
     // Create a new product (Карточка товара)
-    public function store(CreateBasicProductRequest $request): JsonResponse
-    {
-        $product = $this->basicProductService->createProduct($request->validated());
+    public function store(Request $request)
+{
+    $request->validate([
+        'name_of_products' => 'required|string',
+        'description' => 'nullable|string',
+        'country' => 'nullable|string',
+        'type' => 'nullable|string',
+        'brutto' => 'required|numeric',
+        'netto' => 'required|numeric',
+        'photo_product' => 'nullable|file|mimes:jpeg,png,jpg,gif',
+    ]);
 
-        return response()->json($product, 201);
+    $data = $request->only(['name_of_products', 'description', 'country', 'type', 'brutto', 'netto']);
+
+    if ($request->hasFile('photo_product')) {
+        $filePath = $request->file('photo_product')->store('products', 'public');
+        $data['photo_product'] = $filePath;
     }
 
+    $product = BasicProductsPrice::create($data);
+
+    return response()->json($product, 201);
+}
     // Create a new sub-product (Подкарточка)
     public function storeSales(CreateSalesRequest $request): JsonResponse
     {

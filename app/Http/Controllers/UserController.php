@@ -12,9 +12,20 @@ class UserController extends Controller
     // Get all users (only accessible by admin)
     public function index()
     {
-        $users = User::all();
+        $users = User::where('id', '!=', auth()->id())->get();
         return response()->json($users);
     }
+    public function assignRole(Request $request, User $user)
+{
+    $request->validate([
+        'role' => 'required|string',
+    ]);
+
+    $user->role = $request->role;
+    $user->save();
+
+    return response()->json(['message' => 'Role assigned successfully']);
+}
 
     // Store a new user (create employee)
     public function store(Request $request)

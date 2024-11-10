@@ -1,12 +1,9 @@
 <?php
-// app/Services/BasicProductService.php
 
 namespace App\Services;
 
-use App\Models\BasicProduct;
 use App\Models\BasicProductsPrice;
 use App\Models\Sales;
-use Illuminate\Support\Facades\DB;
 
 class BasicProductService
 {
@@ -20,7 +17,7 @@ class BasicProductService
             'type' => $data['type'] ?? null,
             'brutto' => $data['brutto'] ?? null,
             'netto' => $data['netto'] ?? null,
-            'photo_product' => $data['photo_product'] ?? null,
+            'photo_product' => $data['photo_product'] ?? null, // This should now have the file path
         ]);
     }
 

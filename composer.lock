@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ffa4081e7ca8667f8420a109d784b1c0",
+    "content-hash": "4d6bda3cb8d85bd3232f82ade882706e",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -3402,6 +3402,60 @@
                 }
             ],
             "time": "2021-09-25T23:10:38+00:00"
+        },
+        {
+            "name": "sourovahmad/unzipper",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Sourovahmad/laravel-unzipper.git",
+                "reference": "982e163c43b795902ea680d30b679edf145f9676"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Sourovahmad/laravel-unzipper/zipball/982e163c43b795902ea680d30b679edf145f9676",
+                "reference": "982e163c43b795902ea680d30b679edf145f9676",
+                "shasum": ""
+            },
+            "default-branch": true,
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Sourovahmad\\Unzipper\\SourovahmadUnzipperServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Sourovahmad\\Unzipper\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "sourovahmad",
+                    "email": "mdsourovahmad19@gmail.com"
+                }
+            ],
+            "description": "An easy way to unzip the files in laravel",
+            "keywords": [
+                "laravel",
+                "laravel unzip file package",
+                "laravel unzip package",
+                "laravel unzipper",
+                "unzip",
+                "unzip for laravel",
+                "unzip package laravel"
+            ],
+            "support": {
+                "issues": "https://github.com/Sourovahmad/laravel-unzipper/issues",
+                "source": "https://github.com/Sourovahmad/laravel-unzipper/tree/main"
+            },
+            "time": "2021-09-29T16:53:49+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",

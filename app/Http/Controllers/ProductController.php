@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BasicProductsPrice;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -57,7 +58,7 @@ class ProductController extends Controller
         $data['photo_product'] = $imagePath;
     }
 
-    Product::create($data);
+    BasicProductsPrice::create($data);
 
     return redirect()->route('products.index')
                      ->with('success', 'Product created successfully.');
@@ -89,5 +90,14 @@ public function update(Request $request, Product $product)
     return redirect()->route('products.index')
                      ->with('success', 'Product updated successfully.');
 }
+
+
+
+
+
+
+
+
+
 
 }
