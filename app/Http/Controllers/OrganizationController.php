@@ -13,15 +13,21 @@ class OrganizationController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'name' => 'required',
-            'current_accounts' => 'required',
-        ]);
+{
+    $validatedData = $request->validate([
+        'name' => 'required|string',
+        'current_accounts' => 'required|string',
+    ]);
 
-        $organization = Organization::create($request->all());
-        return response()->json($organization, 201);
+    $organization = Organization::create($validatedData);
+
+    if ($organization) {
+        return response()->json(['success' => true, 'organization' => $organization], 201);
+    } else {
+        return response()->json(['success' => false, 'message' => 'Failed to create organization'], 500);
     }
+}
+
 
     public function update(Request $request, Organization $organization)
     {

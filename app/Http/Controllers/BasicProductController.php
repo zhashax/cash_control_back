@@ -51,4 +51,11 @@ class BasicProductController extends Controller
 
         return response()->json($sale, 201);
     }
+
+
+    public function getAllProducts()
+    {
+        $products = BasicProductsPrice::all();
+        return response()->json($products, 200);
+    }
 }

@@ -6,6 +6,11 @@ use App\Models\BasicProductsPrice;
 use App\Models\Sales;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use App\Models\PriceRequest;
+use App\Models\Product_Group;
+use App\Models\AdminWarehouse;
+
 use App\Models\Product;
 class AdminController extends Controller
 {
@@ -101,6 +106,112 @@ public function sellProduct(Request $request, $productId)
 
     return response()->json(['message' => 'Product sold successfully', 'sale' => $sale]);
 }
+
+// Ценовое предложение
+
+// Create a new offer request
+public function createOfferRequest(Request $request)
+{
+    $validator = Validator::make($request->all(), [
+        'user_id' => 'required|exists:users,id',
+        'product_id' => 'required|exists:basic_products_prices,id',
+        'unit_measurement' => 'required|string',
+        'amount' => 'required|integer',
+        'price' => 'required|numeric',
+        'choice_status' => 'nullable|string',
+        'address_id' => 'nullable|integer'
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json(['errors' => $validator->errors()], 422);
+    }
+
+    $priceRequest = PriceRequest::create($request->all());
+
+    return response()->json([
+        'message' => 'Offer request created successfully',
+        'data' => $priceRequest
+    ], 201);
+}
+
+// Get all offer requests
+public function getOfferRequests()
+{
+    $requests = PriceRequest::with(['user', 'product'])->get();
+    return response()->json($requests, 200);
+}
+
+// Get a specific offer request
+public function getOfferRequest($id)
+{
+    $request = PriceRequest::with(['user', 'product'])->find($id);
+
+    if (!$request) {
+        return response()->json(['message' => 'Request not found'], 404);
+    }
+
+    return response()->json($request, 200);
+}
+// Ценовое предложение end
+
+// ТМЗ
+public function addProductToWarehouse(Request $request)
+    {
+        $validated = $request->validate([
+            'admin_warehouse_id' => 'required|exists:admin_warehouses,id',
+            'basic_product_price_id' => 'required|exists:basic_products_prices,id'
+        ]);
+
+        $productGroup = Product_Group::create($validated);
+
+        return response()->json([
+            'message' => 'Product linked to warehouse successfully',
+            'data' => $productGroup
+        ], 201);
+    }
+
+        // Достать из склада определенный товар
+        public function getProductsByWarehouse($warehouseId)
+        {
+            $products = Product_Group::where('admin_warehouse_id', $warehouseId)
+                ->join('basic_products_prices', 'product_groups.basic_product_price_id', '=', 'basic_products_prices.id')
+                ->select('basic_products_prices.*')
+                ->get();
+    
+            return response()->json($products, 200);
+        }
+    
+    // TMZ
+
+// Админ добавляет на свой склад карточку товара
+    public function createWarehouse(Request $request)
+    {
+        $validated = $request->validate([
+            'client_id' => 'nullable|exists:users,id',
+            'name_of_products' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'unit_measurement' => 'nullable|string',
+            'quantity' => 'nullable|numeric',
+            'type' => 'nullable|string',
+            'price' => 'nullable|integer',
+        ]);
+
+        $warehouse = AdminWarehouse::create($validated);
+
+        return response()->json(['message' => 'Warehouse created successfully', 'data' => $warehouse], 201);
+    }
+
+    // Get all warehouses
+    public function getAllWarehouses()
+    {
+        $warehouses = AdminWarehouse::all();
+        return response()->json($warehouses, 200);
+    }
+
+// Админ добавляет на свой склад карточку товара
+
+
+   
 
 
 }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateBProductPRequestGroupsTable extends Migration
+class CreateProductPRequestGroupsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,12 @@ class CreateBProductPRequestGroupsTable extends Migration
      */
     public function up()
     {
-        // Группа,заявка, накладная, поступление ценового предложения
-        Schema::create('b_product__p_request__groups', function (Blueprint $table) {
+                // Группа,заявка, накладная, поступление ценового предложения
+
+                //product_price_request_groups
+        Schema::create('product__p_request__groups', function (Blueprint $table) {
             $table->id();
-            $table->integer('basic_product_id');
+            $table->integer('product_id');
             $table->integer('price_request_id');
             $table->timestamps();
         });
@@ -29,6 +31,6 @@ class CreateBProductPRequestGroupsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('b_product__p_request__groups');
+        Schema::dropIfExists('product__p_request__groups');
     }
 }

@@ -10,6 +10,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\UnitMeasurementController;
 use App\Http\Controllers\OrganizationController;
 
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -37,8 +38,26 @@ Route::post('/logout', [AuthController::class,'logout']);
 //admin routes
 Route::post('/product_create',[AdminController::class,'storeProduct']);
 Route::post('basic-products-prices', [BasicProductController::class, 'store']);
+Route::get('/basic-products-prices', [BasicProductController::class, 'getAllProducts']);
+
+
+
 Route::get('/users', [UserController::class, 'index']);
 Route::put('/users/{user}/assign-role', [UserController::class, 'assignRole']);
+
+
+Route::post('/admin/offer-requests', [AdminController::class, 'createOfferRequest']);
+Route::get('/admin/offer-requests', [AdminController::class, 'getOfferRequests']);
+Route::get('/admin/offer-requests/{id}', [AdminController::class, 'getOfferRequest']);
+
+// Warehouse Routes
+Route::post('/warehouses', [AdminController::class, 'createWarehouse']);
+Route::get('/warehouses', [AdminController::class, 'getAllWarehouses']);
+
+
+Route::post('/admin/product-groups', [AdminController::class, 'addProductToWarehouse']);
+Route::get('/warehouses/{id}/products', [AdminController::class, 'getProductsByWarehouse']);
+
 //admin routes end
 
 Route::middleware('auth:sanctum')->post('/upload-photo', [AuthController::class, 'uploadPhoto']);
