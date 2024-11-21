@@ -14,12 +14,13 @@ class CreatePriceRequestsTable extends Migration
     //Ценовое предложение для клиента
     public function up()
     {
+        // ценовое предложение
         Schema::create('price_requests', function (Blueprint $table) {
             $table->id();
             $table->string('choice_status')->nullable();
             $table->integer('user_id')->nullable();
             $table->integer('address_id')->nullable();
-            $table->integer('product_id');
+            $table->integer('product_card_id');
             $table->string('unit_measurement')->nullable();
             $table->integer('amount')->nullable();
             $table->integer('price')->nullable();

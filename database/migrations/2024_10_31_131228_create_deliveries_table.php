@@ -13,6 +13,7 @@ class CreateDeliveriesTable extends Migration
      */
     public function up()
     {
+        // доставки курьера
         Schema::create('deliveries', function (Blueprint $table) {
             $table->id();
             $table->string('full_name_courier');

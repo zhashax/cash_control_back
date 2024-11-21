@@ -2,15 +2,16 @@
 
 namespace App\Services;
 
-use App\Models\BasicProductsPrice;
+use App\Models\ProductCard;
+use App\Models\ProductSubCard;
 use App\Models\Sales;
 
-class BasicProductService
+class ProductCardService
 {
     // Create a new product
-    public function createProduct(array $data): BasicProductsPrice
+    public function createProduct(array $data): ProductCard
     {
-        return BasicProductsPrice::create([
+        return ProductCard::create([
             'name_of_products' => $data['name_of_products'],
             'description' => $data['description'] ?? null,
             'country' => $data['country'] ?? null,
@@ -22,9 +23,9 @@ class BasicProductService
     }
 
     // Create a new sales entry linked to a product
-    public function createSale(array $data): Sales
+    public function createProductSubCard(array $data): ProductSubCard
     {
-        return Sales::create([
+        return ProductSubCard::create([
             'product_id' => $data['product_id'],
             'client_id' => $data['client_id'] ?? null,
             'quantity_sold' => $data['quantity_sold'],

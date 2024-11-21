@@ -12,6 +12,9 @@ use App\Models\Product_Group;
 use App\Models\AdminWarehouse;
 
 use App\Models\Product;
+use App\Models\ProductCard;
+use App\Models\ProductSubCard;
+
 class AdminController extends Controller
 {
     public function index(){
@@ -25,7 +28,7 @@ class AdminController extends Controller
 
 
     public function create_product(Request $request){
-        return BasicProductsPrice::create($request->query->all());
+        return ProductCard::create($request->query->all());
     }
 
 
@@ -35,24 +38,23 @@ class AdminController extends Controller
     $request->validate([
         'name_of_products' => 'required|string',
         'type' => 'required|string',
-        'photo_product' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'photo_product' => 'nullable|image|mimes:jpeg,png,jpg,gif',
     ]);
 
     $data = $request->all();
-
-    // Check if a file is uploaded
     if ($request->hasFile('photo_product')) {
-        $imagePath = $request->file('photo_product')->store('images', 'public');
+        // сохр в папку 'public/products/photos' 
+        $imagePath = $request->file('photo_product')->store('products/photos', 'public');
         $data['photo_product'] = $imagePath;
     }
 
-    BasicProductsPrice::create($data);
+    ProductCard::create($data);
 
-    return redirect()->back()
-                     ->with('success', 'Product created successfully.');
+    return response()->json(['success' => 'Product created successfully.'], 201);
 }
 
-public function update(Request $request, BasicProductsPrice $product)
+
+public function update(Request $request, ProductCard $product)
 {
     $request->validate([
         'name_of_products' => 'required|string',
@@ -64,19 +66,19 @@ public function update(Request $request, BasicProductsPrice $product)
 
     // Check if a new file is uploaded
     if ($request->hasFile('photo_product')) {
-        $imagePath = $request->file('photo_product')->store('images', 'public');
+        // Store the new image
+        $imagePath = $request->file('photo_product')->store('products/photos', 'public');
         $data['photo_product'] = $imagePath;
 
         // Optionally delete the old photo file if it exists
-        if ($product->photo_product && \Storage::disk('public')->exists($product->photo_product)) {
-            \Storage::disk('public')->delete($product->photo_product);
+        if ($product->photo_product && Storage::disk('public')->exists($product->photo_product)) {
+            Storage::disk('public')->delete($product->photo_product);
         }
     }
 
     $product->update($data);
 
-    return redirect()->route('products.index')
-                     ->with('success', 'Product updated successfully.');
+    return response()->json(['success' => 'Product updated successfully.']);
 }
 
 
@@ -87,7 +89,7 @@ public function sellProduct(Request $request, $productId)
         'price' => 'required|integer|min:1',
     ]);
 
-    $product = Product::findOrFail($productId);
+    $product = ProductSubCard::findOrFail($productId);
 
     if ($product->quantity < $request->quantity) {
         return response()->json(['error' => 'Not enough stock available'], 400);
@@ -98,7 +100,7 @@ public function sellProduct(Request $request, $productId)
     $product->save();
 
     // Create a new sale record
-    $sale = new Sales();
+    $sale = new ProductSubCard();
     $sale->product_id = $product->id;
     $sale->quantity_sold = $request->quantity;
     $sale->price_at_sale = $request->price;

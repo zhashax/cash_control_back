@@ -13,10 +13,11 @@ class CreatePackerReportsTable extends Migration
      */
     public function up()
     {
+        // фасовка отчеты
         Schema::create('packer_reports', function (Blueprint $table) {
             $table->id();
-            $table->integer('client_id')->primaryKey();
-            $table->integer('products_id')->primaryKey();
+            $table->integer('client_id'); // Reference to products table
+            $table->integer('product_card_id')->primaryKey();
             $table->string('status');
             $table->string('delivery_address')->nullable();
             $table->timestamps();

@@ -5,21 +5,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Sales extends Model
+class ProductSubCard extends Model
 {
     use HasFactory;
 
-    
+    protected $table = 'product_sub_cards';
+
     protected $fillable = [
         'product_id',
         'client_id',
         'quantity_sold',
-        'price_at_sale',
+        'price_at_sale'
     ];
 
     public function product()
-{
-    return $this->belongsTo(BasicProductsPrice::class);
-}
-
+    {
+        return $this->belongsTo(ProductCard::class, 'product_id');
+    }
 }

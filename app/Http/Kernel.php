@@ -54,12 +54,8 @@ class Kernel extends HttpKernel
      * @var array<string, class-string|string>
      */
     protected $routeMiddleware = [
-        'courier' => \App\Http\Middleware\Roles::class,
-        'admin' => \App\Http\Middleware\Roles::class,
-        'client' => \App\Http\Middleware\Roles::class,
-        'cashbox' => \App\Http\Middleware\Roles::class,
-        'storage' => \App\Http\Middleware\Roles::class,
-        'packer' => \App\Http\Middleware\Roles::class,
+        
+        'role' => \App\Http\Middleware\Roles::class,
 
         'auth' => \App\Http\Middleware\Authenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,

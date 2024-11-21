@@ -7,15 +7,15 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up()
     {
+            // админ поступление товара и склад
         Schema::create('admin_warehouses', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('client_id')->nullable()->constrained('users')->onDelete('cascade');
-            $table->string('name_of_products');
-            $table->string('description')->nullable();
-            $table->string('unit_measurement')->nullable();
-            $table->double('quantity')->nullable(); // Total stock remaining
-            $table->string('type')->nullable();
-            $table->integer('price')->nullable(); // Default price if needed
+            $table->integer('organization_id')->nullable()->constrained('users')->onDelete('cascade');
+            $table->integer('product_card_id');
+            $table->string('unit_measurement')->nullable();// ед измерение
+            $table->double('quantity')->nullable(); // количества
+            $table->integer('price')->nullable();//цена
+            $table->integer('total_sum')->nullable();//итог
             $table->timestamps();
         });
     }

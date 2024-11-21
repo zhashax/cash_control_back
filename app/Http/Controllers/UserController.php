@@ -6,26 +6,46 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use App\Models\Role;
+
 
 class UserController extends Controller
 {
     // Get all users (only accessible by admin)
     public function index()
-    {
-        $users = User::where('id', '!=', auth()->id())->get();
-        return response()->json($users);
-    }
-    public function assignRole(Request $request, User $user)
+{
+    $users = User::with('roles')->get();
+    return response()->json($users);
+}
+    // админ присвоет роль
+    public function assignRoles(Request $request, User $user)
 {
     $request->validate([
-        'role' => 'required|string',
+        'role' => 'string|exists:roles,name',
     ]);
 
-    $user->role = $request->role;
-    $user->save();
+    $role = Role::where('name', $request->role)->first();
+    if ($role) {
+        $user->roles()->attach($role);
+    }
 
-    return response()->json(['message' => 'Role assigned successfully']);
+    return response()->json(['message' => 'Роль успешно присвоен!']);
 }
+
+public function removeRole(Request $request, User $user)
+{
+    $request->validate([
+        'role' => 'string|exists:roles,name',
+    ]);
+
+    $role = Role::where('name', $request->role)->first();
+    if ($role) {
+        $user->roles()->detach($role);
+    }
+
+    return response()->json(['message' => 'Role removed successfully']);
+}
+// удалить роль 
 
     // Store a new user (create employee)
     public function store(Request $request)

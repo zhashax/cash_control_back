@@ -9,7 +9,9 @@ use App\Http\Controllers\BasicProductController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UnitMeasurementController;
 use App\Http\Controllers\OrganizationController;
-
+use App\Http\Controllers\ProductCardController;
+use App\Http\Controllers\AddressController;
+use App\Http\Controllers\PriceRequestController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,7 +25,9 @@ use App\Http\Controllers\OrganizationController;
 */
 
 // Route::middleware('auth:sanctum')->get('/user', function () {
-
+   Route::group(['middleware' => ['auth:sanctum']], function () {
+      
+  });
     
 // });
 
@@ -37,13 +41,9 @@ Route::post('/logout', [AuthController::class,'logout']);
 // });
 //admin routes
 Route::post('/product_create',[AdminController::class,'storeProduct']);
-Route::post('basic-products-prices', [BasicProductController::class, 'store']);
-Route::get('/basic-products-prices', [BasicProductController::class, 'getAllProducts']);
+   
 
 
-
-Route::get('/users', [UserController::class, 'index']);
-Route::put('/users/{user}/assign-role', [UserController::class, 'assignRole']);
 
 
 Route::post('/admin/offer-requests', [AdminController::class, 'createOfferRequest']);
@@ -59,11 +59,26 @@ Route::post('/admin/product-groups', [AdminController::class, 'addProductToWareh
 Route::get('/warehouses/{id}/products', [AdminController::class, 'getProductsByWarehouse']);
 
 //admin routes end
-
+// это чтобы всех ролей собрать
+Route::middleware('auth:sanctum')->get('/user/roles', function () {
+   return auth()->user()->roles->pluck('name');
+});
+// все роли собирать заканчивается ветка
 Route::middleware('auth:sanctum')->post('/upload-photo', [AuthController::class, 'uploadPhoto']);
 
-Route::post('sales', [BasicProductController::class, 'storeSales']);
+
+// страница администратора
+
 Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
+   Route::post('product_card_create', [ProductCardController::class, 'store']);//создать карточку товара
+   Route::get('/product_cards', [ProductCardController::class, 'getCardProducts']);
+
+   Route::post('price_requests', [PriceRequestController::class, 'store']);
+
+
+   Route::put('/users/{user}/assign-roles', [UserController::class, 'assignRoles']);
+   Route::delete('/users/{user}/remove-role', [UserController::class, 'removeRole']);
+
    Route::get('/users', [UserController::class, 'index']);
    Route::post('/users', [UserController::class, 'store']);
    Route::put('/users/{user}', [UserController::class, 'update']);
@@ -80,11 +95,19 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::put('/unit-measurements/{unit}', [UnitMeasurementController::class, 'update']);
     Route::delete('/unit-measurements/{unit}', [UnitMeasurementController::class, 'destroy']);
 
+    // создать адрес клиентов
+    Route::get('/users/{userId}/addresses', [AddressController::class, 'index']); // List addresses
+    Route::post('/users/{userId}/addresses', [AddressController::class, 'store']); // Add an address
+    Route::put('/addresses/{addressId}', [AddressController::class, 'update']); // Update an address
+    Route::delete('/addresses/{addressId}', [AddressController::class, 'destroy']); // Delete an address
+    // создать адрес клиентов
+
+});
+// страница администратора
+
+Route::middleware(['auth:sanctum', 'client'])->group(function () {
 });
 
-Route::middleware(['auth:sanctum', 'role:client'])->group(function () {
-
-});
 
 Route::middleware(['auth:sanctum', 'role:cashbox'])->group(function () {
 
