@@ -10,61 +10,77 @@ use Illuminate\Support\Facades\Auth;
 class AuthController extends Controller
 {
     public function login(Request $request)
-{
-    // Validate incoming request
-    $request->validate([
-        'whatsapp_number' => 'required',
-        'password' => 'required',
-    ]);
-
-    if (Auth::attempt(['whatsapp_number' => $request->whatsapp_number, 'password' => $request->password])) {
-        $user = Auth::user();
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()->json([
-            'token' => $token,
-            'role' => $user->role,
-            'first_name' => $user->first_name,
-            'last_name' => $user->last_name,
-            'surname' => $user->surname,
-            'whatsapp_number' => $user->whatsapp_number,
-            'photo' => $user->photo ? asset('storage/' . $user->photo) : null, // Add photo URL
-        ], 200);
-    }
-
-    return response()->json(['message' => 'Incorrect login or password'], 401);
-}
-    public function register(Request $request)
     {
-        try {
-            $fields = $request->validate([
-                "first_name" => 'required|string',
-                "last_name" => 'required|string',
-                "surname" => 'required|string',
-                "whatsapp_number" => 'required|string|unique:users',
-                "password" => 'required|string|confirmed',
-            ]);
-
-            $user = User::create([
-                'first_name' => $fields['first_name'],
-                'last_name' => $fields['last_name'],
-                'surname' => $fields['surname'],
-                'whatsapp_number' => $fields['whatsapp_number'],
-                'password' => bcrypt($fields['password']),
-            ]);
-
-            $token = $user->createToken('myapptoken')->plainTextToken;
-
-            $response = [
-                'user' => $user,
+        // Validate the incoming request
+        $request->validate([
+            'whatsapp_number' => 'required',
+            'password' => 'required',
+        ]);
+    
+        if (Auth::attempt(['whatsapp_number' => $request->whatsapp_number, 'password' => $request->password])) {
+            $user = Auth::user();
+            $token = $user->createToken('auth_token')->plainTextToken;
+    
+            // Fetch the roles of the user
+            $roles = $user->roles()->pluck('name')->toArray();
+    
+            return response()->json([
                 'token' => $token,
-            ];
-
-            return response($response, 201);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response(['message' => $e->errors()], 400);
+                'roles' => $roles,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'surname' => $user->surname,
+                'whatsapp_number' => $user->whatsapp_number,
+                'photo' => $user->photo ? asset('storage/' . $user->photo) : null,
+            ], 200);
         }
+    
+        return response()->json(['message' => 'Incorrect login or password'], 401);
     }
+    
+    public function register(Request $request)
+{
+    try {
+        // Validate the incoming request
+        $fields = $request->validate([
+            "first_name" => 'required|string',
+            "last_name" => 'required|string',
+            "surname" => 'required|string',
+            "whatsapp_number" => 'required|string|unique:users',
+            "password" => 'required|string|confirmed',
+        ]);
+
+        // Create the user
+        $user = User::create([
+            'first_name' => $fields['first_name'],
+            'last_name' => $fields['last_name'],
+            'surname' => $fields['surname'],
+            'whatsapp_number' => $fields['whatsapp_number'],
+            'password' => bcrypt($fields['password']),
+        ]);
+
+        // Assign the default "client" role to the user
+        $clientRole = Role::where('name', 'client')->first();
+        $user->roles()->attach($clientRole);
+
+        // Fetch the user's roles (should only be "client" initially)
+        $roles = $user->roles()->pluck('name')->toArray();
+
+        // Generate a token for the user
+        $token = $user->createToken('myapptoken')->plainTextToken;
+
+        // Prepare the response
+        $response = [
+            'user' => $user,
+            'roles' => $roles,
+            'token' => $token,
+        ];
+
+        return response()->json($response, 201);
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        return response()->json(['message' => $e->errors()], 400);
+    }
+}
 
 
     public function uploadPhoto(Request $request)

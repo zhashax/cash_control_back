@@ -20,12 +20,8 @@ class CreateUsersTable extends Migration
             $table->string('last_name')->nullable();
             $table->string('surname')->nullable();
             $table->string('whatsapp_number');
-            //admins address and cash amount
             $table->string('summary')->nullable();
             $table->string('address')->nullable();
-            //admins address end
-
-            $table->string('role')->default('client');
             $table->string('password');
             $table->string('photo')->nullable(); // Add photo field
 

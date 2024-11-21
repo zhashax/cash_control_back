@@ -13,6 +13,7 @@ class CreateAdminCashesTable extends Migration
      */
     public function up()
     {
+        // счета админа (владельца)
         Schema::create('admin_cashes', function (Blueprint $table) {
             $table->id();
             $table->integer('admin_id');

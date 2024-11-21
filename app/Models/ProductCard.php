@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class BasicProductsPrice extends Model
+class ProductCard extends Model
 {
     use HasFactory;
-    protected $table = 'basic_products_prices';
 
+    protected $table = 'product_cards';
 
     protected $fillable = [
         'name_of_products',
@@ -19,6 +19,15 @@ class BasicProductsPrice extends Model
         'brutto',
         'netto',
         'photo_product',
-          
     ];
+
+    public function subCards()
+    {
+        return $this->hasMany(ProductSubCard::class, 'product_id');
+    }
+
+    public function priceRequests()
+    {
+        return $this->hasMany(PriceRequest::class, 'product_card_id');
+    }
 }

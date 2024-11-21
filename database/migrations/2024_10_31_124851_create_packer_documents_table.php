@@ -13,11 +13,12 @@ class CreatePackerDocumentsTable extends Migration
      */
     public function up()
     {
+        // накладные фасовщика
         Schema::create('packer_documents', function (Blueprint $table) {
             $table->id();
             $table->integer('id_courier');
             $table->string('delivery_address')->nullable();
-            $table->integer('products_id')->nullable();
+            $table->integer('product_card_id');
             $table->double('amount_of_products')->nullable();
             $table->integer('id_of_products_in_storage')->nullable();
 

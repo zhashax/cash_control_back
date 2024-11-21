@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateClientRequestsTable extends Migration
+class CreateMessagesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,13 @@ class CreateClientRequestsTable extends Migration
      */
     public function up()
     {
-        // фасовщик заявка в накладную
-        Schema::create('client_requests', function (Blueprint $table) {
+        Schema::create('messages', function (Blueprint $table) {
             $table->id();
-            $table->integer('products_id');
-            $table->integer('organization_id');
-            $table->integer('products_amount');
-            
+            $table->integer('user_id');
+            $table->text('message');
             $table->timestamps();
         });
+        
     }
 
     /**
@@ -31,6 +29,6 @@ class CreateClientRequestsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('client_requests');
+        Schema::dropIfExists('messages');
     }
 }

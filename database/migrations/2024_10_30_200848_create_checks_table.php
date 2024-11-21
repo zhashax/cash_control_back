@@ -18,13 +18,14 @@ class CreateChecksTable extends Migration
             $table->id();
             $table->string('type');
             $table->integer('admin_cash_id');
-            $table->integer('user_id');
-            $table->integer('cashbox_id');
+            $table->integer('product_card_id'); // Ensure 'product_cards' table exists
+            $table->integer('cashbox_id'); // Ensure 'cashboxes' table exists
             $table->integer('summary_cash');
             $table->date('date_of_check');
             $table->string('photo_of_check')->nullable();
             $table->timestamps();
         });
+        
     }
 
     /**

@@ -13,10 +13,10 @@ class PriceRequest extends Model
         'choice_status',
         'user_id',
         'address_id',
-        'product_id',
+        'product_card_id',
         'unit_measurement',
         'amount',
-        'price'
+        'price',
     ];
 
     // Relationship with User
@@ -26,8 +26,8 @@ class PriceRequest extends Model
     }
 
     // Relationship with Product
-    public function product()
+    public function productCard()
     {
-        return $this->belongsTo(Product::class, 'product_id');
+        return $this->belongsTo(ProductCard::class, 'product_card_id');
     }
 }

@@ -13,6 +13,7 @@ class CreateAddressesTable extends Migration
      */
     public function up()
     {
+        // адреса
         Schema::create('addresses', function (Blueprint $table) {
             $table->id();
             $table->integer('user_id');

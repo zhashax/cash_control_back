@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCabinetCouriersTable extends Migration
+class CreateRolesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,12 @@ class CreateCabinetCouriersTable extends Migration
      */
     public function up()
     {
-        // кабинет курьера
-        Schema::create('cabinet_couriers', function (Blueprint $table) {
+        Schema::create('roles', function (Blueprint $table) {
             $table->id();
-            $table->string('from_address');
-            $table->string('to_address');
+            $table->string('name')->unique(); // Role names like "cashbox", "courier"
             $table->timestamps();
         });
+        
     }
 
     /**
@@ -29,6 +28,6 @@ class CreateCabinetCouriersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('cabinet_couriers');
+        Schema::dropIfExists('roles');
     }
 }

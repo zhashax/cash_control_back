@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateGlobalReferencesTable extends Migration
+class CreateProductCardsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,18 +13,16 @@ class CreateGlobalReferencesTable extends Migration
      */
     public function up()
     {
-        Schema::create('global_references', function (Blueprint $table) {
+        // карточка товара
+        Schema::create('product_cards', function (Blueprint $table) {
             $table->id();
             $table->string('name_of_products');
             $table->string('description')->nullable();
-            $table->double('quantity')->nullable();
             $table->string('country')->nullable();
             $table->string('type')->nullable();
             $table->double('brutto')->nullable();
             $table->double('netto')->nullable();
-            $table->integer('price')->nullable();
             $table->string('photo_product')->nullable();
-
             $table->timestamps();
         });
     }
@@ -36,6 +34,6 @@ class CreateGlobalReferencesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('global_references');
+        Schema::dropIfExists('product_cards');
     }
 }

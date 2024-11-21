@@ -18,7 +18,7 @@ class CreateBasketsTable extends Migration
             $table->id();
             $table->integer('id_client_request' );
             $table->date('delivery_date');
-            
+
             $table->timestamps();
         });
     }

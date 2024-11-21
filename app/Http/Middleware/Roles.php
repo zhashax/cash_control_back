@@ -12,17 +12,24 @@ class Roles
      * Handle an incoming request.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
-     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     * @param  \Closure  $next
+     * @param  string  $role
+     * @return mixed
      */
-    public function handle(Request $request, Closure $next, $role)
+    public function handle(Request $request, Closure $next, $role = null)
     {
+        // Check if the user is authenticated
+        if (!Auth::check()) {
+            return response()->json(['error' => 'Unauthenticated'], 401);
+        }
+    
         $user = Auth::user();
-
-        if (!$user || !$user->hasRole($role)) {
+    
+        // Check if the user has the required role
+        if (!$user->roles->contains('name', $role)) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
-
+    
         return $next($request);
     }
 }
