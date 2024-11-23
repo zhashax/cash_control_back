@@ -12,7 +12,7 @@ use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\ProductCardController;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\PriceRequestController;
-
+use App\Http\Controllers\SubCardController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -74,6 +74,15 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
    Route::get('/product_cards', [ProductCardController::class, 'getCardProducts']);
 
    Route::post('price_requests', [PriceRequestController::class, 'store']);
+   //оприходование товаров
+   Route::post('/admin_warehouses', [AdminController::class, 'store_receiving_products']);
+   //оприходование товаров
+
+   
+   //подкарточки
+   Route::post('product_sub_cards', [SubCardController::class, 'store']);
+   Route::get('product_sub_cards/{productCardId}', [SubCardController::class, 'fetchByProductCard']);
+   //подкарточки
 
 
    Route::put('/users/{user}/assign-roles', [UserController::class, 'assignRoles']);

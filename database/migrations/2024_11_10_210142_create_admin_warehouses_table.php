@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->double('quantity')->nullable(); // количества
             $table->integer('price')->nullable();//цена
             $table->integer('total_sum')->nullable();//итог
+            $table->date('date')->nullable();
             $table->timestamps();
         });
     }

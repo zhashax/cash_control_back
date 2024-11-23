@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\PriceRequest;
 use App\Models\Product_Group;
 use App\Models\AdminWarehouse;
+use Illuminate\Support\Facades\Log;
 
 use App\Models\Product;
 use App\Models\ProductCard;
@@ -25,6 +26,30 @@ class AdminController extends Controller
     //     $user create([]);
 
     // }
+
+    public function store_receiving_products(Request $request)
+{
+    Log::info('Request Data:', $request->all());
+
+    // Validate the request
+    $validated = $request->validate([
+        'organization_id' => 'nullable|integer|exists:users,id',
+        'product_card_id' => 'required|integer|exists:product_cards,id',
+        'unit_measurement' => 'nullable|string',
+        'quantity' => 'nullable|numeric|min:0',
+        'price' => 'nullable|numeric|min:0',
+        'total_sum' => 'nullable|numeric|min:0',
+        'date' => 'nullable|date',
+    ]);
+
+    // Save the data to the database
+    $adminWarehouse = AdminWarehouse::create($validated);
+
+    return response()->json([
+        'message' => 'Product received successfully',
+        'data' => $adminWarehouse,
+    ], 201);
+}
 
 
     public function create_product(Request $request){
