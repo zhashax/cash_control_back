@@ -9,12 +9,12 @@ class AdminWarehouse extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'client_id',
-        'name_of_products',
-        'description',
-        'unit_measurement',
-        'quantity',
-        'type',
-        'price'
+        'organization_id',
+        'product_card_id',
+        'unit_measurement',// ед измерение
+        'quantity', // количества
+        'price',//цена
+        'total_sum',//итог
+           
     ];
 }

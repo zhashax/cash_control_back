@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\ProductCard;
 use App\Services\ProductCardService;
+use Illuminate\Support\Facades\Log;
 
 class ProductCardController extends Controller
 {
@@ -17,6 +18,7 @@ class ProductCardController extends Controller
 
     public function store(Request $request)
 {
+    Log::info($request->all());
     $request->validate([
         'name_of_products' => 'required|string',
         'description' => 'nullable|string',
@@ -41,6 +43,8 @@ class ProductCardController extends Controller
 
     public function getCardProducts()
 {
+    Log::info('getCardProducts endpoint hit.');
+
     try {
         $products = ProductCard::all();
 

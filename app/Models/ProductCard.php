@@ -23,7 +23,7 @@ class ProductCard extends Model
 
     public function subCards()
     {
-        return $this->hasMany(ProductSubCard::class, 'product_id');
+        return $this->hasMany(ProductSubCard::class, 'product_card_id');
     }
 
     public function priceRequests()

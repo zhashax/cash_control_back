@@ -12,7 +12,7 @@ class ProductSubCard extends Model
     protected $table = 'product_sub_cards';
 
     protected $fillable = [
-        'product_id',
+        'product_card_id',
         'client_id',
         'quantity_sold',
         'price_at_sale'
@@ -20,6 +20,6 @@ class ProductSubCard extends Model
 
     public function product()
     {
-        return $this->belongsTo(ProductCard::class, 'product_id');
+        return $this->belongsTo(ProductCard::class, 'product_card_id');
     }
 }
