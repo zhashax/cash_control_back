@@ -80,8 +80,8 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
 
    
    //подкарточки
-   Route::post('product_sub_cards', [SubCardController::class, 'store']);
-   Route::get('product_sub_cards/{productCardId}', [SubCardController::class, 'fetchByProductCard']);
+   Route::post('/product_subcards', [SubCardController::class, 'store']); //подкарточки
+   Route::get('/product_subcards', [SubCardController::class, 'getSubCards']); 
    //подкарточки
 
 
@@ -97,10 +97,10 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::post('/organizations', [OrganizationController::class, 'store']);
     Route::put('/organizations/{organization}', [OrganizationController::class, 'update']);
     Route::delete('/organizations/{organization}', [OrganizationController::class, 'destroy']);
-
+   
     // Unit Measurements Routes
     Route::get('/unit-measurements', [UnitMeasurementController::class, 'index']);
-    Route::post('/unit-measurements', [UnitMeasurementController::class, 'store']);
+    Route::post('unit-measurements', [UnitMeasurementController::class, 'store']);
     Route::put('/unit-measurements/{unit}', [UnitMeasurementController::class, 'update']);
     Route::delete('/unit-measurements/{unit}', [UnitMeasurementController::class, 'destroy']);
 
@@ -162,8 +162,4 @@ Route::get('/users', [UserController::class, 'index']);
     Route::put('/organizations/{organization}', [OrganizationController::class, 'update']);
     Route::delete('/organizations/{organization}', [OrganizationController::class, 'destroy']);
 
-    // Unit Measurements Routes
-    Route::get('/unit-measurements', [UnitMeasurementController::class, 'index']);
-    Route::post('/unit-measurements', [UnitMeasurementController::class, 'store']);
-    Route::put('/unit-measurements/{unit}', [UnitMeasurementController::class, 'update']);
-    Route::delete('/unit-measurements/{unit}', [UnitMeasurementController::class, 'destroy']);
+  
