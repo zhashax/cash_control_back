@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateProductSubCardsTable extends Migration
+class CreateProvidersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,9 @@ class CreateProductSubCardsTable extends Migration
      */
     public function up()
     {
-        Schema::create('product_sub_cards', function (Blueprint $table) {
+        Schema::create('providers', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->integer('product_card_id'); 
-            $table->double('brutto')->nullable();
-            $table->double('netto')->nullable();
             $table->timestamps();
         });
     }
@@ -30,6 +27,6 @@ class CreateProductSubCardsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('product_sub_cards');
+        Schema::dropIfExists('providers');
     }
 }

@@ -15,6 +15,9 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Product;
 use App\Models\ProductCard;
 use App\Models\ProductSubCard;
+use App\Models\Provider;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
@@ -27,29 +30,7 @@ class AdminController extends Controller
 
     // }
 
-    public function store_receiving_products(Request $request)
-{
-    Log::info('Request Data:', $request->all());
-
-    // Validate the request
-    $validated = $request->validate([
-        'organization_id' => 'nullable|integer|exists:users,id',
-        'product_card_id' => 'required|integer|exists:product_cards,id',
-        'unit_measurement' => 'nullable|string',
-        'quantity' => 'nullable|numeric|min:0',
-        'price' => 'nullable|numeric|min:0',
-        'total_sum' => 'nullable|numeric|min:0',
-        'date' => 'nullable|date',
-    ]);
-
-    // Save the data to the database
-    $adminWarehouse = AdminWarehouse::create($validated);
-
-    return response()->json([
-        'message' => 'Product received successfully',
-        'data' => $adminWarehouse,
-    ], 201);
-}
+    
 
 
     public function create_product(Request $request){
@@ -213,32 +194,149 @@ public function addProductToWarehouse(Request $request)
 // Админ добавляет на свой склад карточку товара
     public function createWarehouse(Request $request)
     {
+        try {
+            Log::info('Request Data:', $request->all());
+
+            // Validate the incoming request
+            $validated = $request->validate([
+                'organization_id' => 'nullable|integer|exists:users,id',
+                'product_card_id' => 'required|integer|exists:product_cards,id',
+                'unit_measurement' => 'nullable|string|max:255',
+                'quantity' => 'nullable|numeric|min:0',
+                'price' => 'nullable|numeric|min:0',
+                'total_sum' => 'nullable|numeric|min:0',
+                'date' => 'nullable|date_format:Y-m-d', // Ensure the date format is correct
+            ]);
+
+            // Save the validated data to the database
+            $adminWarehouse = AdminWarehouse::create($validated);
+
+            // Return a success response
+            return response()->json([
+                'message' => 'Product received successfully',
+                'data' => $adminWarehouse,
+            ], 201);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Return validation error messages
+            return response()->json([
+                'error' => 'Validation failed',
+                'messages' => $e->errors(),
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('Error storing product receiving:', ['error' => $e->getMessage()]);
+            // Return a generic error response
+            return response()->json([
+                'error' => 'Failed to store product receiving data',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    // принятие товаров в склад админа
+    public function receivingBulkStore(Request $request)
+{
+    try {
+        // Log the incoming request for debugging
+        Log::info('Received bulk receiving data:', $request->all());
+
+        // Validate the incoming data
         $validated = $request->validate([
-            'client_id' => 'nullable|exists:users,id',
-            'name_of_products' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'unit_measurement' => 'nullable|string',
-            'quantity' => 'nullable|numeric',
-            'type' => 'nullable|string',
-            'price' => 'nullable|integer',
+            'receivings' => 'required|array',
+            'receivings.*.organization_id' => 'nullable|integer|exists:users,id',
+            'receivings.*.product_card_id' => 'required|integer|exists:product_cards,id',
+            'receivings.*.unit_measurement' => 'nullable|string|max:255',
+            'receivings.*.quantity' => 'nullable|numeric|min:0',
+            'receivings.*.price' => 'nullable|numeric|min:0',
+            'receivings.*.total_sum' => 'nullable|numeric|min:0',
+            'receivings.*.date' => 'nullable|date_format:Y-m-d',
         ]);
 
-        $warehouse = AdminWarehouse::create($validated);
+        // Insert each validated receiving into the database
+        foreach ($validated['receivings'] as $receiving) {
+            AdminWarehouse::create($receiving);
+        }
 
-        return response()->json(['message' => 'Warehouse created successfully', 'data' => $warehouse], 201);
-    }
+        // Return a success response
+        return response()->json([
+            'message' => 'Bulk product receiving successfully stored!',
+        ], 201);
 
-    // Get all warehouses
-    public function getAllWarehouses()
-    {
-        $warehouses = AdminWarehouse::all();
-        return response()->json($warehouses, 200);
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        // Return validation error messages
+        return response()->json([
+            'error' => 'Validation failed',
+            'messages' => $e->errors(),
+        ], 422);
+    } catch (\Exception $e) {
+        // Log and return the error if insertion fails
+        Log::error('Error saving product receiving:', ['error' => $e->getMessage()]);
+        return response()->json([
+            'error' => 'Failed to store product receiving data',
+            'message' => $e->getMessage(),
+        ], 500);
     }
+}
+
 
 // Админ добавляет на свой склад карточку товара
 
 
-   
+    public function getProviders()
+    {
+        return response()->json(Provider::all(), 200);
+    }
 
+    public function storeProvider(Request $request)
+    {
+    $request->validate(['name' => 'required']);
+
+    $provider = Provider::create($request->only('name'));
+    return response()->json($provider, 201);
+    }
+
+    public function updateProvider(Request $request, Provider $provider)
+    {
+        $provider->update($request->all());
+        return response()->json($provider, 200);
+    }
+
+    public function destroyProvider(Provider $provider)
+    {
+        $provider->delete();
+        return response()->json(['message' => 'Unit deleted'], 200);
+    }
+
+
+    public function getClientUsers()
+{
+    try {
+        $clientUsers = User::whereHas('roles', function ($query) {
+            $query->where('name', 'client');
+        })->get(['id', 'first_name', 'last_name', 'whatsapp_number']);
+
+        return response()->json($clientUsers, 200);
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Failed to fetch client users', 'message' => $e->getMessage()], 500);
+    }
+}
+
+
+    // справочник
+    public function fetchOperationsHistory()
+{
+    $productCards = DB::table('product_cards')->select('id', 'name_of_products as operation', 'created_at')->get();
+    $productSubcards = DB::table('product_sub_cards')->select('id', 'name as operation', 'created_at')->get();
+    $sales = DB::table('sales')->select('id', 'amount as operation', 'created_at')->get();
+    $productPrices = DB::table('product_prices')->select('id', 'price as operation', 'created_at')->get();
+
+    $operations = $productCards
+        ->concat($productSubcards)
+        ->concat($sales)
+        ->concat($productPrices)
+        ->sortByDesc('created_at')
+        ->values();
+
+    return response()->json($operations, 200);
+}
 
 }

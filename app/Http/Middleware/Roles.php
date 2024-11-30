@@ -16,20 +16,20 @@ class Roles
      * @param  string  $role
      * @return mixed
      */
-    public function handle(Request $request, Closure $next, $role = null)
-    {
-        // Check if the user is authenticated
-        if (!Auth::check()) {
-            return response()->json(['error' => 'Unauthenticated'], 401);
-        }
-    
-        $user = Auth::user();
-    
-        // Check if the user has the required role
-        if (!$user->roles->contains('name', $role)) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
-    
-        return $next($request);
+    public function handle(Request $request, Closure $next, ...$roles)
+{
+    if (!Auth::check()) {
+        return response()->json(['error' => 'Unauthenticated'], 401);
     }
+
+    $user = Auth::user();
+
+    // Allow access if the user has any of the specified roles
+    if (!$user->roles()->whereIn('name', $roles)->exists()) {
+        return response()->json(['error' => 'Unauthorized'], 403);
+    }
+
+    return $next($request);
+}
+
 }

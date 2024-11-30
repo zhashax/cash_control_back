@@ -16,7 +16,8 @@ class CreateGeneralWarehousesTable extends Migration
          // склады общие 
         Schema::create('general_warehouses', function (Blueprint $table) {
             $table->id();
-            $table->integer('product_card_id');
+            $table->integer('storager_id');// 
+            $table->integer('product_subcard_id');//subcard
             $table->double('amount')->nullable();
             $table->string('unit_measurement')->nullable();
             $table->timestamps();

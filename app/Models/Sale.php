@@ -5,17 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class AdminWarehouse extends Model
+class Sale extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'organization_id',
-        'product_card_id',
+        'product_subcard_id',
         'unit_measurement',
-        'quantity',
+        'amount',
         'price',
-        'total_sum',
-        'date',
-           
     ];
+
 }

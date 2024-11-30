@@ -16,8 +16,7 @@ class ProductCard extends Model
         'description',
         'country',
         'type',
-        'brutto',
-        'netto',
+        
         'photo_product',
     ];
 
@@ -25,6 +24,7 @@ class ProductCard extends Model
     {
         return $this->hasMany(ProductSubCard::class, 'product_card_id');
     }
+    
 
     public function priceRequests()
     {

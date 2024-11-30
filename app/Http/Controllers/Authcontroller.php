@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Role;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -14,7 +16,8 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-        // Validate the incoming request
+        // Log::info('Login attempt:', $request->all());
+
         $request->validate([
             'whatsapp_number' => 'required',
             'password' => 'required',
@@ -42,51 +45,67 @@ class AuthController extends Controller
         return response()->json(['message' => 'Incorrect login or password'], 401);
     }
 
-    /**
-     * Register a new user and assign the default "client" role.
-     */
-    public function register(Request $request)
-    {
+    public function register(Request $request){
+        Log::info('Register Request', $request->all());
+
         try {
             // Validate the incoming request
             $fields = $request->validate([
-                "first_name" => 'required|string',
-                "last_name" => 'required|string',
-                "surname" => 'required|string',
-                "whatsapp_number" => 'required|string|unique:users',
-                "password" => 'required|string|confirmed',
+                "first_name" => 'required|string|max:255',
+                "last_name" => 'required|string|max:255',
+                "surname" => 'required|string|max:255',
+                "whatsapp_number" => 'required|string|unique:users|max:15',
+                "password" => 'required|string|confirmed|min:8',
             ]);
-
+    
             // Create the user
             $user = User::create([
                 'first_name' => $fields['first_name'],
                 'last_name' => $fields['last_name'],
                 'surname' => $fields['surname'],
                 'whatsapp_number' => $fields['whatsapp_number'],
-                'password' => bcrypt($fields['password']),
+                'password' => Hash::make($fields['password']), // Use Hash::make for password hashing
             ]);
-
-            // Assign the default "client" role to the user
+    
+            // Fetch the default "client" role
             $clientRole = Role::where('name', 'client')->first();
+            if (!$clientRole) {
+                return response()->json([
+                    'message' => 'Default "client" role not found. Please create it first.'
+                ], 500);
+            }
+    
+            // Assign the default "client" role to the user
             $user->roles()->attach($clientRole);
-
+    
             // Fetch the user's roles
             $roles = $user->roles()->pluck('name')->toArray();
-
+    
             // Generate a token for the user
-            $token = $user->createToken('myapptoken')->plainTextToken;
-
+            $token = $user->createToken('user-auth-token')->plainTextToken;
+    
             // Prepare the response
             return response()->json([
-                'id' => $user->id, // Include user ID
-                'user' => $user,
-                'roles' => $roles,
+                'id' => $user->id,
+                'user' => [
+                    'first_name' => $user->first_name,
+                    'last_name' => $user->last_name,
+                    'surname' => $user->surname,
+                    'whatsapp_number' => $user->whatsapp_number,
+                    'roles' => $roles,
+                ],
                 'token' => $token,
             ], 201);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json(['message' => $e->errors()], 400);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'An error occurred during registration.',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
+    
 
     /**
      * Handle photo upload for authenticated user.

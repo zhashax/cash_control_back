@@ -10,33 +10,37 @@ class SubCardController extends Controller
 {
     // Store a new ProductSubCard
     public function store(Request $request)
-    {
-        Log::info($request->all());
+{
+    try {
+        Log::info('ProductSubCard store endpoint hit.', ['request' => $request->all()]);
+
         $validated = $request->validate([
             'product_card_id' => 'required|exists:product_cards,id',
-            'quantity_sold' => 'required|numeric',
-            'price_at_sale' => 'required|integer',
+            'name' => 'required|string|max:255',
+            'brutto' => 'required|numeric|min:0',
+            'netto' => 'required|numeric|min:0',
         ]);
 
         $subCard = ProductSubCard::create($validated);
 
         return response()->json([
-            'message' => 'Подкарточка успешно создана!',
+            'message' => 'Подкарточка успешно создано!',
             'data' => $subCard,
         ], 201);
+    } catch (\Exception $e) {
+        Log::error('Error creating product subcard.', ['error' => $e->getMessage()]);
+        return response()->json(['error' => 'Failed to create product subcard.'], 500);
     }
+}
 
     public function getSubCards()
 {
-    Log::info('Fetching all product subcards.');
-
     try {
-        // Eager load product_card relation
-        $subcards = ProductSubCard::with('productCard')->get();
-
-        return response()->json($subcards, 200);
+        $subCards = ProductSubCard::all(); // Retrieve all subcards
+        return response()->json($subCards, 200);
     } catch (\Exception $e) {
-        return response()->json(['error' => $e->getMessage()], 500);
+        Log::error('Error fetching subcards', ['error' => $e->getMessage()]);
+        return response()->json(['error' => 'Failed to fetch subcards.'], 500);
     }
 }
 

@@ -20,10 +20,12 @@ class CreatePriceRequestsTable extends Migration
             $table->string('choice_status')->nullable();
             $table->integer('user_id')->nullable();
             $table->integer('address_id')->nullable();
-            $table->integer('product_card_id');
+            $table->integer('product_subcard_id');
             $table->string('unit_measurement')->nullable();
             $table->integer('amount')->nullable();
             $table->integer('price')->nullable();
+            $table->date('start_date')->nullable(); // Add start date
+            $table->date('end_date')->nullable();  
             $table->timestamps();
         });
     }

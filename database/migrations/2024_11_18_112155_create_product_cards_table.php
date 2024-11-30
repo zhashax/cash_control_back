@@ -20,10 +20,9 @@ class CreateProductCardsTable extends Migration
             $table->string('description')->nullable();
             $table->string('country')->nullable();
             $table->string('type')->nullable();
-            $table->double('brutto')->nullable();
-            $table->double('netto')->nullable();
+            
             $table->string('photo_product')->nullable();
-            $table->timestamps();
+                $table->timestamps();
         });
     }
 

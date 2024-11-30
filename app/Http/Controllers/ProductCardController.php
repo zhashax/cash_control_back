@@ -18,33 +18,36 @@ class ProductCardController extends Controller
 
     public function store(Request $request)
 {
-    Log::info($request->all());
-    $request->validate([
-        'name_of_products' => 'required|string',
-        'description' => 'nullable|string',
-        'country' => 'nullable|string',
-        'type' => 'nullable|string',
-        'brutto' => 'required|numeric',
-        'netto' => 'required|numeric',
-        'photo_product' => 'nullable|file|mimes:jpeg,png,jpg,gif',
-    ]);
+    try {
+        // Log::info('ProductCard store endpoint hit.', ['request' => $request->all()]);
 
-    $data = $request->only(['name_of_products', 'description', 'country', 'type', 'brutto', 'netto']);
+        $validated = $request->validate([
+            'name_of_products' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'country' => 'nullable|string|max:255',
+            'type' => 'nullable|string|max:255',
+            
+            'photo_product' => 'nullable|file|mimes:jpeg,png,jpg,gif',
+        ]);
 
-    if ($request->hasFile('photo_product')) {
-        $filePath = $request->file('photo_product')->store('products', 'public');
-        $data['photo_product'] = $filePath;
+        if ($request->hasFile('photo_product')) {
+            $validated['photo_product'] = $request->file('photo_product')->store('products', 'public');
+        }
+
+        $product = ProductCard::create($validated);
+
+        return response()->json([
+            'message' => 'Карточка товара успешно создана!',
+            'data' => $product,
+        ], 201);
+    } catch (\Exception $e) {
+        Log::error('Error creating product card.', ['error' => $e->getMessage()]);
+        return response()->json(['error' => 'Failed to create product card.'], 500);
     }
-
-    $product = ProductCard::create($data);
-
-    return response()->json($product, 201);
 }
 
-    public function getCardProducts()
+public function getCardProducts()
 {
-    Log::info('getCardProducts endpoint hit.');
-
     try {
         $products = ProductCard::all();
 
@@ -63,4 +66,5 @@ class ProductCardController extends Controller
         return response()->json(['error' => $e->getMessage()], 500);
     }
 }
+
 }

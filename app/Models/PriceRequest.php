@@ -17,6 +17,8 @@ class PriceRequest extends Model
         'unit_measurement',
         'amount',
         'price',
+        'start_date',
+        'end_date',
     ];
 
     // Relationship with User

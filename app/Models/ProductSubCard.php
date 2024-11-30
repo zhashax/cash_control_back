@@ -13,12 +13,14 @@ class ProductSubCard extends Model
 
     protected $fillable = [
         'product_card_id',
-        'quantity_sold',
-        'price_at_sale'
+        'name',
+        'brutto',
+        'netto'
     ];
-
+    
     public function productCard()
-    {
-        return $this->belongsTo(ProductCard::class, 'product_card_id');
-    }
+{
+    return $this->belongsTo(ProductCard::class, 'product_card_id');
+}
+
 }

@@ -18,7 +18,9 @@ class CreateBasketsTable extends Migration
             $table->id();
             $table->integer('id_client_request' );
             $table->date('delivery_date');
-
+            $table->integer('product_subcard_id');
+            $table->boolean('product_favorites');
+            $table->boolean('product_on_basket');
             $table->timestamps();
         });
     }
