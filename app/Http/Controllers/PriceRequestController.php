@@ -4,104 +4,112 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\PriceRequest;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+
 
 class PriceRequestController extends Controller
 {
     public function store(Request $request)
     {
-        Log::info('Received single price request data:', $request->all());
-    
+        Log::info('Request data:', $request->all());
+
+        $validator = Validator::make($request->all(), [
+            'client_id' => 'required|integer|exists:users,id',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
+            'products' => 'required|array',
+            'products.*.product_subcard_id' => 'required|integer|exists:product_sub_cards,id',
+            'products.*.amount' => 'required|integer|min:1',
+            'products.*.price' => 'required|integer|min:1',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
+
         try {
-            $validated = $request->validate([
-                'client_id' => 'required|integer|exists:users,id', // Ensure client ID exists
-                'start_date' => 'required|date',
-                'end_date' => 'required|date|after_or_equal:start_date',
-                'products' => 'required|array',
-                'products.*.product_subcard_id' => 'required|integer|exists:product_sub_cards,id',
-                'products.*.quantity' => 'required|integer|min:1',
-                'products.*.price' => 'required|numeric|min:0',
-            ]);
-    
-            foreach ($validated['products'] as $product) {
+            foreach ($request->products as $product) {
                 PriceRequest::create([
-                    'user_id' => $validated['client_id'], // Save client_id as user_id
-                    'start_date' => $validated['start_date'],
-                    'end_date' => $validated['end_date'],
+                    'user_id' => $request->client_id,
                     'product_subcard_id' => $product['product_subcard_id'],
-                    'amount' => $product['quantity'], // Map quantity to amount
+                    'amount' => $product['amount'],
                     'price' => $product['price'],
+                    'start_date' => $request->start_date,
+                    'end_date' => $request->end_date,
                 ]);
             }
-    
-            return response()->json([
-                'message' => 'Price request created successfully!',
-            ], 201);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            Log::error('Validation failed for single price request:', ['errors' => $e->errors()]);
-            return response()->json([
-                'error' => 'Validation failed',
-                'messages' => $e->errors(),
-            ], 422);
-        } catch (\Exception $e) {
-            Log::error('Error saving single price request:', ['error' => $e->getMessage()]);
-            return response()->json([
-                'error' => 'Failed to save price request',
-                'message' => $e->getMessage(),
-            ], 500);
-        }
-    }
-    
 
-    public function bulkStore(Request $request)
-    {
-        Log::info('Received bulk price request data:', $request->all());
-    
-        try {
-            $validated = $request->validate([
-                'price_requests' => 'required|array',
-                'price_requests.*.client_id' => 'required|integer|exists:users,id',
-                'price_requests.*.start_date' => 'required|date',
-                'price_requests.*.end_date' => 'required|date|after_or_equal:price_requests.*.start_date',
-                'price_requests.*.products' => 'required|array',
-                'price_requests.*.products.*.product_subcard_id' => 'required|integer|exists:product_sub_cards,id',
-                'price_requests.*.products.*.quantity' => 'required|integer|min:1',
-                'price_requests.*.products.*.price' => 'required|numeric|min:0',
-            ]);
-    
-            Log::info('Validated bulk price request data:', $validated);
-    
-            // Process each price request
-            foreach ($validated['price_requests'] as $priceRequest) {
-                foreach ($priceRequest['products'] as $product) {
-                    PriceRequest::create([
-                        'user_id' => $priceRequest['client_id'],
-                        'product_subcard_id' => $product['product_subcard_id'],
-                        'amount' => $product['quantity'],
-                        'price' => $product['price'],
-                        'start_date' => $priceRequest['start_date'],
-                        'end_date' => $priceRequest['end_date'],
-                    ]);
-                }
-            }
-    
-            return response()->json([
-                'message' => 'Bulk price requests saved successfully!',
-            ], 201);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            Log::error('Validation failed for bulk price requests:', ['errors' => $e->errors()]);
-            return response()->json([
-                'error' => 'Validation failed',
-                'messages' => $e->errors(),
-            ], 422);
+            return response()->json(['message' => 'Price offer stored successfully.'], 201);
         } catch (\Exception $e) {
-            Log::error('Error saving bulk price requests:', ['error' => $e->getMessage()]);
-            return response()->json([
-                'error' => 'Failed to save bulk price requests',
-                'message' => $e->getMessage(),
-            ], 500);
+            return response()->json(['error' => 'Failed to store price offer: ' . $e->getMessage()], 500);
         }
     }
-    
-    
+
+    /**
+     * Store multiple price offers in bulk.
+     */
+    public function bulkStore(Request $request)
+{
+    try {
+        // Log the entire incoming request for debugging
+        Log::info('Incoming Request Payload:', $request->all());
+
+        // Validate the incoming data
+        $validated = $request->validate([
+            'client_id' => 'required|integer|exists:users,id',
+            'start_date' => 'required|date_format:Y-m-d',
+            'end_date' => 'required|date_format:Y-m-d',
+            'price_offers' => 'required|array',
+            'price_offers.*.product_subcard_id' => 'required|integer|exists:product_sub_cards,id',
+            'price_offers.*.unit_measurement' => 'required|string|max:255',
+            'price_offers.*.amount' => 'required|numeric|min:0',
+            'price_offers.*.price' => 'required|numeric|min:0',
+        ]);
+
+        // Log validated data for debugging
+        Log::info('Validated Data:', $validated);
+
+        // Prepare bulk insert data
+        $bulkData = [];
+        foreach ($validated['price_offers'] as $offer) {
+            $bulkData[] = [
+                'user_id' => $validated['client_id'],
+                'product_subcard_id' => $offer['product_subcard_id'],
+                'unit_measurement' => $offer['unit_measurement'],
+                'amount' => $offer['amount'],
+                'price' => $offer['price'],
+                'start_date' => $validated['start_date'],
+                'end_date' => $validated['end_date'],
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+
+        // Insert data into the database
+        PriceRequest::insert($bulkData);
+
+        // Return success response
+        return response()->json([
+            'message' => 'Price offers successfully stored!',
+        ], 201);
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        // Return validation errors
+        Log::warning('Validation Error:', $e->errors());
+        return response()->json([
+            'error' => 'Validation failed',
+            'messages' => $e->errors(),
+        ], 422);
+    } catch (\Exception $e) {
+        // Log and return error if something goes wrong
+        Log::error('Error storing bulk price offers:', ['error' => $e->getMessage()]);
+        return response()->json([
+            'error' => 'Failed to store price offers',
+            'message' => $e->getMessage(),
+        ], 500);
+    }
+}
+
+
 }

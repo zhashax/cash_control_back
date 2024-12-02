@@ -16,6 +16,7 @@ use App\Models\Product;
 use App\Models\ProductCard;
 use App\Models\ProductSubCard;
 use App\Models\Provider;
+use App\Models\Sale;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
@@ -324,19 +325,80 @@ public function addProductToWarehouse(Request $request)
     // справочник
     public function fetchOperationsHistory()
 {
-    $productCards = DB::table('product_cards')->select('id', 'name_of_products as operation', 'created_at')->get();
-    $productSubcards = DB::table('product_sub_cards')->select('id', 'name as operation', 'created_at')->get();
-    $sales = DB::table('sales')->select('id', 'amount as operation', 'created_at')->get();
-    $productPrices = DB::table('product_prices')->select('id', 'price as operation', 'created_at')->get();
+    // Fetch operations from various tables with localized names
+    $productCards = DB::table('product_cards')
+        ->select('id', 'name_of_products as operation', 'created_at', DB::raw("'Карточка товара' as type"))
+        ->get();
 
+    $productSubcards = DB::table('product_sub_cards')
+        ->select('id', 'name as operation', 'created_at', DB::raw("'Подкарточка товара' as type"))
+        ->get();
+
+    $sales = DB::table('sales')
+        ->select('id', 'amount as operation', 'created_at', DB::raw("'Продажа' as type"))
+        ->get();
+
+    $priceRequests = DB::table('price_requests')
+        ->select('id', 'amount as operation', 'created_at', DB::raw("'Ценовое предложение' as type"))
+        ->get();
+
+    // Combine and sort operations by creation date
     $operations = $productCards
         ->concat($productSubcards)
         ->concat($sales)
-        ->concat($productPrices)
+        ->concat($priceRequests)
         ->sortByDesc('created_at')
         ->values();
 
     return response()->json($operations, 200);
 }
+
+public function updateOperation(Request $request, $id, $type)
+{
+    switch ($type) {
+        case 'product_card':
+            $operation = ProductCard::findOrFail($id);
+            break;
+        case 'product_subcard':
+            $operation = ProductSubCard::findOrFail($id);
+            break;
+        case 'sale':
+            $operation = Sale::findOrFail($id);
+            break;
+        case 'price_request':
+            $operation = PriceRequest::findOrFail($id);
+            break;
+        default:
+            return response()->json(['message' => 'Invalid operation type'], 400);
+    }
+
+    $operation->update($request->all());
+
+    return response()->json(['message' => 'Operation updated successfully'], 200);
+}
+
+
+public function deleteOperation($id, $type)
+{
+    switch ($type) {
+        case 'product_card':
+            ProductCard::destroy($id);
+            break;
+        case 'product_subcard':
+            ProductSubCard::destroy($id);
+            break;
+        case 'sale':
+            Sale::destroy($id);
+            break;
+        case 'price_request':
+            PriceRequest::destroy($id);
+            break;
+        default:
+            return response()->json(['message' => 'Invalid operation type'], 400);
+    }
+
+    return response()->json(['message' => 'Operation deleted successfully'], 200);
+}
+
 
 }

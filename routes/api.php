@@ -39,8 +39,8 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
    Route::post('product_card_create', [ProductCardController::class, 'store']);//создать карточку товара
    Route::get('/product_cards', [ProductCardController::class, 'getCardProducts']);
 
-   Route::post('price_requests', [PriceRequestController::class, 'store']);
-   Route::post('price_bulkStore', [PriceRequestController::class, 'bulkStore']);
+   Route::post('price-offers', [PriceRequestController::class, 'store']);
+   Route::post('bulkPriceOffers', [PriceRequestController::class, 'bulkStore']);
 
    
    //оприходование товаров
@@ -103,7 +103,7 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
    
    // Инвентаризация склада
    Route::get('client-users', [AdminController::class, 'getClientUsers']);
-   Route::get('/operations-history', [AdminController::class, 'fetchOperationsHistory']);
+   Route::get('operations-history', [AdminController::class, 'fetchOperationsHistory']);
 
    Route::get('getStorageUsers',[StorageController::class,'getStorageUsers']);
    Route::post('bulkStoreInventory',[StorageController::class,'bulkStoreInventory']);
