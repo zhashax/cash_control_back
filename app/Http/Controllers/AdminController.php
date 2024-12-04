@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Address;
 use App\Models\BasicProductsPrice;
 use App\Models\Sales;
 use Illuminate\Http\Request;
@@ -399,6 +400,9 @@ public function deleteOperation($id, $type)
 
     return response()->json(['message' => 'Operation deleted successfully'], 200);
 }
+
+
+
 
 
 }

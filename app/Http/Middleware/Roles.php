@@ -18,18 +18,20 @@ class Roles
      */
     public function handle(Request $request, Closure $next, ...$roles)
 {
+    // Check if the user is authenticated
     if (!Auth::check()) {
         return response()->json(['error' => 'Unauthenticated'], 401);
     }
 
     $user = Auth::user();
 
-    // Allow access if the user has any of the specified roles
+    // Check if the user has any of the specified roles
     if (!$user->roles()->whereIn('name', $roles)->exists()) {
         return response()->json(['error' => 'Unauthorized'], 403);
     }
 
     return $next($request);
 }
+
 
 }

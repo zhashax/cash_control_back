@@ -56,6 +56,7 @@ class Kernel extends HttpKernel
     protected $routeMiddleware = [
         
         'role' => \App\Http\Middleware\Roles::class,
+        // 'client' => \App\Http\Middleware\Roles::class, // Ensure this alias points to the correct class
 
         'auth' => \App\Http\Middleware\Authenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,

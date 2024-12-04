@@ -8,12 +8,13 @@ use App\Http\Controllers\UnitMeasurementController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\ProductCardController;
 use App\Http\Controllers\AddressController;
+use App\Http\Controllers\ClientController;
 use App\Http\Controllers\PriceRequestController;
 use App\Http\Controllers\SubCardController;
 use App\Http\Controllers\SalesController;
 use App\Http\Controllers\StorageController;
 
-Route::post('/login', [AuthController::class,'login']);
+Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class,'logout']);
 
@@ -88,10 +89,6 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::delete('/unit-measurements/{unit}', [UnitMeasurementController::class, 'destroy']);
 
     // создать адрес клиентов
-    Route::get('/users/{userId}/addresses', [AddressController::class, 'index']); // List addresses
-    Route::post('/users/{userId}/addresses', [AddressController::class, 'store']); // Add an address
-    Route::put('/addresses/{addressId}', [AddressController::class, 'update']); // Update an address
-    Route::delete('/addresses/{addressId}', [AddressController::class, 'destroy']); // Delete an address
     // создать адрес клиентов
 
    //  создать продажу
@@ -109,7 +106,9 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
    Route::post('bulkStoreInventory',[StorageController::class,'bulkStoreInventory']);
    Route::get('getInventory',[StorageController::class,'getInventory']);
 
-   
+
+   Route::post('storeAdress/{userId}', [AddressController::class, 'storeAdress']);
+
 
 });
 Route::middleware(['auth:sanctum', 'role:admin,client'])->group(function () {
@@ -118,8 +117,10 @@ Route::middleware(['auth:sanctum', 'role:admin,client'])->group(function () {
    Route::get('/product_cards', [ProductCardController::class, 'getCardProducts']);
 });
 
-Route::middleware(['auth:sanctum', 'client'])->group(function () {
+Route::middleware(['auth:sanctum', 'role:client'])->group(function () {
      // Route::get('sales', [SalesController::class, 'index']);
+     Route::get('/product-data', [ClientController::class, 'getAllProductData']);
+     Route::get('/tesss', [ClientController::class, 'gettess']);
 
 });
 
